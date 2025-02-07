@@ -1,6 +1,7 @@
 import { command as help } from './commands/help.js';
 import { command as superchat } from './commands/superchat.js';
 import { command as link } from './commands/link.js';
+import { command as profile } from './commands/profile.js';
 
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 
@@ -23,6 +24,9 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case link.data.name:
         await link.execute(interaction);
+        break;
+      case profile.data.name:
+        await profile.execute(interaction);
         break;
       default:
         console.error(`${interaction.commandName}というコマンドには対応していません。`);

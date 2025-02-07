@@ -2,11 +2,13 @@ import { REST, Routes } from 'discord.js';
 import help from './commands/help.js'; 
 import superchat from './commands/superchat.js';
 import link from './commands/link.js';
+import profile from './commands/profile.js';
 
 const commands = [
   help.data.toJSON(),
   superchat.data.toJSON(),
   link.data.toJSON(),
+  profile.data.toJSON()
 ];
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
