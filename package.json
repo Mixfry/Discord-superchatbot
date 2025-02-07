@@ -1,0 +1,21 @@
+{
+  "name": "discord-superchatbot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "script.js",
+  "scripts": {
+    "start": "node --env-file=.env deploy-commands.js && node --env-file=.env script.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/formatters": "^0.6.0",
+    "canvas": "^3.1.0",
+    "discord.js": "^14.17.3",
+    "node-fetch": "^3.3.2",
+    "sqlite3": "^5.1.7",
+    "twemoji-parser": "^14.0.0"
+  }
+}
