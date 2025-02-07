@@ -1,0 +1,4 @@
+.env
+all.db
+node_modules/
+assets/
