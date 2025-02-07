@@ -118,7 +118,7 @@ export const command = {
       moneyColor = '#ffffffff';
       nameColor = '#ffffffb3';
     } else {
-      return interaction.reply({ content: '100円以上で入力してください', ephemeral: true });
+      return interaction.reply({ content: '100円以上で入力してください', flags: 64 });
     }
 
     // ユーザーが指定されている場合, DBからrecieverを取得して送金
@@ -129,11 +129,11 @@ export const command = {
         (err, speakerRow) => {
           if (err) {
             console.error('トークン取得エラー:', err);
-            return;
+            return interaction.reply({ content: 'ゴリラコインが未連携です **/link** で連携してください', flags: 64 });
           }
           if (!speakerRow) {
             console.log('発言者の連携が見つかりません');
-            return;
+            return interaction.reply({ content: 'ゴリラコインが未連携です **/link** で連携してください', flags: 64 });
           }
 
           const speakerToken = speakerRow.token;
@@ -144,11 +144,11 @@ export const command = {
             async (err, recRow) => {
               if (err) {
                 console.error('レシーバー取得エラー:', err);
-                return;
+                return interaction.reply({ content: '送信先のアカウントが未連携です', flags: 64 });
               }
               if (!recRow) {
                 console.log('受取側の連携が見つかりません');
-                return;
+                return interaction.reply({ content: '送信先のアカウントが未連携です', flags: 64 });
               }
 
               try {
@@ -166,110 +166,111 @@ export const command = {
                 });
               } catch (e) {
                 console.error('送金APIエラー:', e);
+                return interaction.reply({ content: 'ゴリラコインが未連携です **/link** で連携してください', flags: 64 });
+              }
+
+              if (comments.length === 0) {
+                // キャンバスの作成
+                const sendheight = 30;
+
+                const canvas = createCanvas(400, 60 + sendheight);
+                const context = canvas.getContext('2d');
+
+                // 上の色
+                context.fillStyle = upperColor;
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                //送信先の背景色
+                context.fillStyle = sendBackGroundColor;
+                context.fillRect(0, 0, canvas.width, sendheight);
+
+                //送信先の名前
+                context.font = "15px 'Roboto'";
+                context.fillStyle = nameColor;
+                context.fillText("To", 20, 20);
+                context.fillText((await interaction.guild?.members.fetch(username.id)).displayName, 40, 20);
+
+                // アイコン
+                context.save();
+                context.beginPath();
+                context.arc(40, canvas.height - 30, 20, 0, Math.PI * 2);
+                context.closePath();
+                context.clip();
+                context.drawImage(avatarImage, 20, canvas.height - 50, 40, 40);
+                context.restore();
+
+                // ユーザーネーム
+                context.font = "18px 'Roboto'";
+                context.fillStyle = nameColor;
+                context.fillText((await interaction.guild?.members.fetch(interaction.user.id)).displayName, 80, canvas.height - 35);
+
+                // 金額
+                context.font = "18px 'Roboto'";
+                context.fillStyle = moneyColor;
+                context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 15);
+
+                // キャンバスの生成
+                const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'superchat.png' });
+                await interaction.reply({ files: [attachment] });
+              } else { //ユーザーが指定されていて、コメントがある場合
+                // キャンバスの作成
+                const sendheight = 30;
+
+                const canvas = createCanvas(400, 90 + comments.length * 20 + sendheight);
+                const context = canvas.getContext('2d');
+
+                // 上の色
+                context.fillStyle = upperColor;
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                //送信先の背景色
+                context.fillStyle = sendBackGroundColor;
+                context.fillRect(0, 0, canvas.width, sendheight);
+
+                //送信先の名前
+                context.font = "15px 'Roboto'";
+                context.fillStyle = nameColor;
+                context.fillText("To", 20, 20);
+                context.fillText((await interaction.guild?.members.fetch(username.id)).displayName, 40, 20);
+
+                // 下の色
+                context.fillStyle = footerColor;
+                context.fillRect(0, canvas.height - 30 - comments.length * 20, canvas.width, 30 + comments.length * 20);
+
+                // アイコン
+                context.save();
+                context.beginPath();
+                context.arc(40, canvas.height - 60 - comments.length * 20, 20, 0, Math.PI * 2);
+                context.closePath();
+                context.clip();
+                context.drawImage(avatarImage, 20, canvas.height - 80 - comments.length * 20, 40, 40);
+                context.restore();
+
+                // ユーザーネーム
+                context.font = "18px 'Roboto'";
+                context.fillStyle = nameColor;
+                context.fillText((await interaction.guild?.members.fetch(interaction.user.id)).displayName, 80, canvas.height - 60 - comments.length * 20);
+
+                // 金額
+                context.font = "18px 'Roboto'";
+                context.fillStyle = moneyColor;
+                context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 40 - comments.length * 20);
+
+                // コメント
+                context.font = "18px 'Roboto'";
+                context.fillStyle = moneyColor;
+                for (let i = 0; i < comments.length; i++) {
+                  context.fillText(comments[i], 20, canvas.height - comments.length * 20 + 20 * i);
+                }
+
+                // キャンバスの生成
+                const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'superchat.png' });
+                await interaction.reply({ files: [attachment] });
               }
             }
           );
         }
       );
-
-      if (comments.length === 0) {
-        // キャンバスの作成
-        const sendheight = 30;
-
-        const canvas = createCanvas(400, 60+sendheight);
-        const context = canvas.getContext('2d');
-  
-        // 上の色
-        context.fillStyle = upperColor;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        //送信先の背景色
-        context.fillStyle = sendBackGroundColor;
-        context.fillRect(0, 0, canvas.width, sendheight);
-
-        //送信先の名前
-        context.font = "15px 'Roboto'";
-        context.fillStyle = nameColor;
-        context.fillText("To", 20, 20);
-        context.fillText((await interaction.guild?.members.fetch(username.id)).displayName, 40, 20);
-
-        // アイコン
-        context.save();
-        context.beginPath();
-        context.arc(40, canvas.height - 30, 20, 0, Math.PI * 2);
-        context.closePath();
-        context.clip();
-        context.drawImage(avatarImage, 20, canvas.height - 50, 40, 40);
-        context.restore();
-  
-        // ユーザーネーム
-        context.font = "18px 'Roboto'";
-        context.fillStyle = nameColor;
-        context.fillText((await interaction.guild?.members.fetch(interaction.user.id)).displayName, 80, canvas.height - 35);
-  
-        // 金額
-        context.font = "18px 'Roboto'";
-        context.fillStyle = moneyColor;
-        context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 15);
-  
-        // キャンバスの生成
-        const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'superchat.png' });
-        await interaction.reply({ files: [attachment] });
-      } else { //ユーザーが指定されていて、コメントがある場合
-        // キャンバスの作成
-        const sendheight = 30;
-
-        const canvas = createCanvas(400, 90 + comments.length * 20 + sendheight);
-        const context = canvas.getContext('2d');
-  
-        // 上の色
-        context.fillStyle = upperColor;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        //送信先の背景色
-        context.fillStyle = sendBackGroundColor;
-        context.fillRect(0, 0, canvas.width, sendheight);
-
-        //送信先の名前
-        context.font = "15px 'Roboto'";
-        context.fillStyle = nameColor;
-        context.fillText("To", 20, 20);
-        context.fillText((await interaction.guild?.members.fetch(username.id)).displayName, 40, 20);
-  
-        // 下の色
-        context.fillStyle = footerColor;
-        context.fillRect(0, canvas.height - 30 - comments.length * 20, canvas.width, 30 + comments.length * 20);
-  
-        // アイコン
-        context.save();
-        context.beginPath();
-        context.arc(40, canvas.height - 60 - comments.length * 20, 20, 0, Math.PI * 2);
-        context.closePath();
-        context.clip();
-        context.drawImage(avatarImage, 20, canvas.height - 80 - comments.length * 20, 40, 40);
-        context.restore();
-  
-        // ユーザーネーム
-        context.font = "18px 'Roboto'";
-        context.fillStyle = nameColor;
-        context.fillText((await interaction.guild?.members.fetch(interaction.user.id)).displayName, 80, canvas.height - 60 - comments.length * 20);
-  
-        // 金額
-        context.font = "18px 'Roboto'";
-        context.fillStyle = moneyColor;
-        context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 40 - comments.length * 20);
-  
-        // コメント
-        context.font = "18px 'Roboto'";
-        context.fillStyle = moneyColor;
-        for (let i = 0; i < comments.length; i++) {
-          context.fillText(comments[i], 20, canvas.height - comments.length * 20 + 20 * i);
-        }
-  
-        // キャンバスの生成
-        const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'superchat.png' });
-        await interaction.reply({ files: [attachment] });
-      }
     } else if (comments.length === 0) {
       // キャンバスの作成
       const canvas = createCanvas(400, 60);
