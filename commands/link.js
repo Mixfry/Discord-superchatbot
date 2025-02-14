@@ -21,12 +21,12 @@ export const command = {
     const code = interaction.options.getString('code');
 
     try {
-      const response = await fetch('http://10.8.101.3:3000/authcode', {
+      const response = await fetch('http://10.8.101.4:3001/authcode', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email: username, code: Number(code) })
+        body: JSON.stringify({ username: username, code: Number(code) })
       });
 
       const data = await response.json();

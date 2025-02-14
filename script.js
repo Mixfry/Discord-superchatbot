@@ -33,6 +33,11 @@ client.on(Events.InteractionCreate, async interaction => {
     }
   } catch (error) {
     console.error('コマンド実行中にエラーが発生しました:', error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content: 'コマンド実行中にエラーが発生しました。', ephemeral: true });
+    } else {
+      await interaction.reply({ content: 'コマンド実行中にエラーが発生しました。', ephemeral: true });
+    }
   }
 });
 

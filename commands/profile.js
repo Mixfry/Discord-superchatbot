@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import sqlite3 from 'sqlite3';
 
 const db = new sqlite3.Database('./all.db');
-const api_url = 'http://10.8.101.3:3000'; // 必要に応じて変更してください
+const api_url = 'http://10.8.101.4:3001'; 
 
 export const command = {
   data: new SlashCommandBuilder()

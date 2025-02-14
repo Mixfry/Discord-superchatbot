@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import sqlite3 from 'sqlite3';
 
 const db = new sqlite3.Database('./all.db');
-const api_url = 'http://10.8.101.3:3000'; // 必要に応じて変更してください
+const api_url = 'http://10.8.101.4:3001'; 
 
 registerFont('./assets/Roboto.ttf', { family: 'Roboto' });
 
@@ -129,11 +129,11 @@ export const command = {
         (err, speakerRow) => {
           if (err) {
             console.error('トークン取得エラー:', err);
-            return interaction.reply({ content: 'ゴリラコインが未連携です **/link** で連携してください', flags: 64 });
+            return interaction.reply({ content: 'ちきなコインが未連携です', flags: 64 });
           }
           if (!speakerRow) {
             console.log('発言者の連携が見つかりません');
-            return interaction.reply({ content: 'ゴリラコインが未連携です **/link** で連携してください', flags: 64 });
+            return interaction.reply({ content: 'ちきなコインが未連携です', flags: 64 });
           }
 
           const speakerToken = speakerRow.token;
@@ -144,29 +144,29 @@ export const command = {
             async (err, recRow) => {
               if (err) {
                 console.error('レシーバー取得エラー:', err);
-                return interaction.reply({ content: '送信先のアカウントが未連携です', flags: 64 });
+                return interaction.reply({ content: 'ちきなコインが未連携です', flags: 64 });
               }
               if (!recRow) {
                 console.log('受取側の連携が見つかりません');
-                return interaction.reply({ content: '送信先のアカウントが未連携です', flags: 64 });
+                return interaction.reply({ content: 'ちきなコインが未連携です', flags: 64 });
               }
 
               try {
                 await fetch(`${api_url}/transfer_money`, {
                   method: 'POST',
                   headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': speakerToken
+                    'Authorization': speakerToken,
+                    'Content-Type': 'application/json'
                   },
                   body: JSON.stringify({
                     reciever: recRow.username,
                     amount: amount,
                     description: 'スーパーチャット'
-                  })
+                  }),
                 });
               } catch (e) {
                 console.error('送金APIエラー:', e);
-                return interaction.reply({ content: 'ゴリラコインが未連携です **/link** で連携してください', flags: 64 });
+                return interaction.reply({ content: 'ちきなコインが未連携です', flags: 64 });
               }
 
               if (comments.length === 0) {
@@ -207,7 +207,7 @@ export const command = {
                 // 金額
                 context.font = "18px 'Roboto'";
                 context.fillStyle = moneyColor;
-                context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 15);
+                context.fillText(`${amount.toLocaleString()}ちきなコイン`, 80, canvas.height - 15);
 
                 // キャンバスの生成
                 const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'superchat.png' });
@@ -254,7 +254,7 @@ export const command = {
                 // 金額
                 context.font = "18px 'Roboto'";
                 context.fillStyle = moneyColor;
-                context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 40 - comments.length * 20);
+                context.fillText(`${amount.toLocaleString()}ちきなコイン`, 80, canvas.height - 40 - comments.length * 20);
 
                 // コメント
                 context.font = "18px 'Roboto'";
@@ -297,7 +297,7 @@ export const command = {
       // 金額
       context.font = "18px 'Roboto'";
       context.fillStyle = moneyColor;
-      context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 15);
+      context.fillText(`¥${amount.toLocaleString()}`, 80, canvas.height - 15);
 
       // キャンバスの生成
       const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'superchat.png' });
@@ -332,7 +332,7 @@ export const command = {
       // 金額
       context.font = "18px 'Roboto'";
       context.fillStyle = moneyColor;
-      context.fillText(`${amount.toLocaleString()}ゴリラコイン`, 80, canvas.height - 40 - comments.length * 20);
+      context.fillText(`¥${amount.toLocaleString()}`, 80, canvas.height - 40 - comments.length * 20);
 
       // コメント
       context.font = "18px 'Roboto'";
